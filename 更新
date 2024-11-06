@@ -1,0 +1,23 @@
+ # 停止并删除 pm2 中的 popmd 进程（如果存在）
+    echo "尝试停止并删除 pm2 中的 popmd 进程... / Attempting to stop and delete popmd process in pm2..."
+    pm2 delete popmd || {
+        echo "pm2 删除 popmd 进程失败或进程不存在。/ Failed to delete popmd process or process does not exist in pm2."
+    }
+
+    # 删除旧的 heminetwork 文件夹
+    echo "删除旧的 heminetwork 文件夹... / Deleting old heminetwork folder..."
+    rm -rf "$HOME/heminetwork"
+
+    # 下载并解压 $HEMINETWORK_VERSION 版本
+    echo "下载 $HEMINETWORK_VERSION 版本的压缩包... / Downloading $HEMINETWORK_VERSION version archive..."
+    if wget "$FILE_LINK" -O /tmp/heminetwork_${HEMINETWORK_VERSION}_linux_amd64.tar.gz; then
+        echo "解压 $HEMINETWORK_VERSION 版本的压缩包到 heminetwork 文件夹... / Extracting $HEMINETWORK_VERSION version archive to heminetwork folder..."
+        mkdir -p "$HOME/heminetwork"
+        tar -xzf /tmp/heminetwork_${HEMINETWORK_VERSION}_linux_amd64.tar.gz -C "$HOME/heminetwork" --strip-components=1
+
+        # 删除压缩包文件
+        rm /tmp/heminetwork_${HEMINETWORK_VERSION}_linux_amd64.tar.gz
+    else
+        echo "下载失败，停止执行 / Download failed, stopping."
+        exit 1
+    fi
